@@ -1,0 +1,6 @@
+[generators]
+CMakeDeps
+CMakeToolchain
+
+[requires]
+rapidjson/3.0.1+1.1.0@tomtom/stable
