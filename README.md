@@ -20,5 +20,16 @@ reading Nevada.json
 parsed file: 14957ms
 ```
 
+As a next step, getting rid of `rapidjson::IStreamWrapper` and reading to an
+`std::ostringstream`, then copying to a `std::string` reduces the parsing time
+immensely:
+
+```
+$ ./build/benchmark_rapidjson Nevada.json
+reading Nevada.json
+read file: 4621ms
+parsed file: 1570ms
+```
+
 
 [RJ]: http://rapidjson.org/

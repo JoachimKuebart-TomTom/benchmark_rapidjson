@@ -1,14 +1,13 @@
 #include <chrono>
 #include <fstream>
 #include <iostream>
+#include <sstream>
 
 #include <rapidjson/document.h>
-#include <rapidjson/istreamwrapper.h>
 #include <rapidjson/ostreamwrapper.h>
 #include <rapidjson/writer.h>
 
 using rapidjson::Document;
-using rapidjson::IStreamWrapper;
 using rapidjson::OStreamWrapper;
 using rapidjson::Writer;
 using std::chrono::duration_cast;
@@ -16,11 +15,15 @@ using std::chrono::milliseconds;
 
 void benchmark(std::istream& is) {
   auto const time0{std::chrono::steady_clock::now()};
-  Document doc;
-  IStreamWrapper isw{is};
-  doc.ParseStream(isw);
+  std::ostringstream oss;
+  oss << is.rdbuf();
+  std::string json{oss.str()};
   auto const time1{std::chrono::steady_clock::now()};
-  std::cout << "parsed file: " << duration_cast<milliseconds>(time1 - time0).count() << "ms\n";
+  std::cout << "read file: " << duration_cast<milliseconds>(time1 - time0).count() << "ms\n";
+  Document doc;
+  doc.Parse(json);
+  auto const time2{std::chrono::steady_clock::now()};
+  std::cout << "parsed file: " << duration_cast<milliseconds>(time2 - time1).count() << "ms\n";
 
   OStreamWrapper os{std::cout};
   Writer<OStreamWrapper> writer{os};
