@@ -2,5 +2,10 @@
 CMakeDeps
 CMakeToolchain
 
+[options]
+boost:header_only=True
+boost:without_iostreams=False
+
 [requires]
+boost/3.3.1+1.81.0@tomtom/stable
 rapidjson/3.0.1+1.1.0@tomtom/stable

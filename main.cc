@@ -3,6 +3,8 @@
 #include <iostream>
 #include <sstream>
 
+#include <boost/iostreams/device/mapped_file.hpp>
+
 #include <rapidjson/document.h>
 #include <rapidjson/ostreamwrapper.h>
 #include <rapidjson/writer.h>
@@ -13,17 +15,12 @@ using rapidjson::Writer;
 using std::chrono::duration_cast;
 using std::chrono::milliseconds;
 
-void benchmark(std::istream& is) {
+void benchmark(boost::iostreams::mapped_file_source const& file) {
   auto const time0{std::chrono::steady_clock::now()};
-  std::ostringstream oss;
-  oss << is.rdbuf();
-  std::string json{oss.str()};
-  auto const time1{std::chrono::steady_clock::now()};
-  std::cout << "read file: " << duration_cast<milliseconds>(time1 - time0).count() << "ms\n";
   Document doc;
-  doc.Parse(json);
-  auto const time2{std::chrono::steady_clock::now()};
-  std::cout << "parsed file: " << duration_cast<milliseconds>(time2 - time1).count() << "ms\n";
+  doc.Parse(file.data(), file.size());
+  auto const time1{std::chrono::steady_clock::now()};
+  std::cout << "parsed file: " << duration_cast<milliseconds>(time1 - time0).count() << "ms\n";
 
   OStreamWrapper os{std::cout};
   Writer<OStreamWrapper> writer{os};
@@ -32,14 +29,10 @@ void benchmark(std::istream& is) {
 }
 
 int main(int argc, char const* argv[]) {
-  if (argc <= 1) {
-    benchmark(std::cin);
-  } else {
-    for (int i{1}; i != argc; ++i) {
-      std::cout << "reading " << argv[i] << '\n';
-      std::ifstream is{argv[i]};
-      benchmark(is);
-    }
+  for (int i{1}; i < argc; ++i) {
+    std::cout << "reading " << argv[i] << '\n';
+    boost::iostreams::mapped_file_source file{argv[i]};
+    benchmark(file);
   }
 
   return 0;

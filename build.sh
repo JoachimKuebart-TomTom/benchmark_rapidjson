@@ -1,5 +1,6 @@
 set -efu
 conan install \
+    --build missing \
     --install-folder build \
     .
 cmake \

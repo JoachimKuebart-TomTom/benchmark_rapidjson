@@ -31,5 +31,14 @@ read file: 4621ms
 parsed file: 1570ms
 ```
 
+Switching to a memory-mapped file using `boost::iostreams::mapped_file_source`
+eliminates the time required to read the file:
+
+```
+$ ./build/benchmark_rapidjson Nevada.json
+reading Nevada.json
+parsed file: 1834ms
+```
+
 
 [RJ]: http://rapidjson.org/
